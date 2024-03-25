@@ -1,0 +1,26 @@
+{
+    "extends": ["airbnb-typescript/base"],
+    "parserOptions": {
+        "project": "./tsconfig.eslint.json",
+        "tsconfigRootDir": "."
+    },
+    "rules": {
+        "comma-dangle": ["error", "never"],
+        "eol-last": "off",
+        "object-curly-newline": ["error", { "consistent": true }],
+        "@typescript-eslint/no-use-before-define": "off",
+        "import/prefer-default-export": "off",
+        "implicit-arrow-linebreak": "off",
+        "no-console": "off",
+        "max-len": ["error", { "code": 140, "ignoreStrings": true, "ignoreTemplateLiterals": true, "comments": 200 }],
+        "import/no-cycle": "off",
+        "no-restricted-syntax": "off",
+        "guard-for-in": "off",
+        "no-plusplus": "off",
+        "import/no-extraneous-dependencies": "off",
+        "no-param-reassign": "off",
+        "class-methods-use-this": "off",
+        "@typescript-eslint/no-redeclare": "off",
+        "import/extensions": "off"
+    }
+}
