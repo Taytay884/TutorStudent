@@ -5,11 +5,11 @@ export async function createTutor(tutor: ITutor): Promise<ITutor> {
 }
 
 export async function getTutorById(id: string): Promise<ITutor | null> {
-  return Tutor.findById({ id });
+  return Tutor.findById({ id }).populate('courses');
 }
 
 export async function getTutors(): Promise<ITutor[]> {
-  return Tutor.find();
+  return Tutor.find().populate('courses');
 }
 
 export async function updateTutor(tutor: ITutor): Promise<ITutor | null> {

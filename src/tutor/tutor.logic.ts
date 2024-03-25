@@ -19,7 +19,11 @@ export function getTutors(): Promise<ITutor[]> {
 }
 
 export function updateTutor(tutor: ITutor): Promise<ITutor | null> {
-  return TutorDal.updateTutor(tutor);
+  try {
+    return TutorDal.updateTutor(tutor);
+  } catch (error) {
+    throw new Error(getMongoError(error));
+  }
 }
 
 export function deleteTutor(id: string): Promise<ITutor | null> {

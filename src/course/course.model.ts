@@ -1,4 +1,4 @@
-import { Schema, Document } from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
 
 export interface ICourse extends Document {
   name: string;
@@ -7,5 +7,7 @@ export interface ICourse extends Document {
 
 export const CourseSchema = new Schema({
   name: { type: String, required: true },
-  id: { type: String, required: true },
+  id: { type: String, required: true, unique: true },
 });
+
+export const Course = model<ICourse>('Course', CourseSchema);

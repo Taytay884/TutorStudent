@@ -2,5 +2,5 @@ export function getMongoError(error: any): string {
   if (error.code === 11000) {
     return 'Duplicate key error';
   }
-  return 'Unknown error';
+  return error.message;
 }
