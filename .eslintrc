@@ -5,7 +5,6 @@
         "tsconfigRootDir": "."
     },
     "rules": {
-        "comma-dangle": ["error", "never"],
         "eol-last": "off",
         "object-curly-newline": ["error", { "consistent": true }],
         "@typescript-eslint/no-use-before-define": "off",
