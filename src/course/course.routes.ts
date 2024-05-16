@@ -1,6 +1,6 @@
 import { Express, Request, Response } from 'express';
-import * as CourseLogic from '../course/course.logic';
-import { ICourse } from '../course/course.model';
+import * as CourseLogic from './course.logic';
+import { ICourse } from './course.model';
 
 export function initCourseRoutes(app: Express) {
   app.get('/courses', async (req: Request, res: Response) => {
