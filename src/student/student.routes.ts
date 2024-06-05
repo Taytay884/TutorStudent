@@ -1,11 +1,12 @@
 import { Express, Request, Response } from 'express';
 import * as StudentLogic from './student.logic';
 import { IStudent } from './student.model';
+import { GetStudentsFilter } from './student.type';
 
 export function initStudentRoutes(app: Express) {
-  app.get('/students', async (req: Request, res: Response) => {
+  app.get('/students', async (req: Request<unknown, unknown, unknown, GetStudentsFilter>, res: Response) => {
     try {
-      const students = await StudentLogic.getStudents();
+      const students = await StudentLogic.getStudents(req.query);
       res.json(students);
     } catch (error) {
       res.status(500).send(error);

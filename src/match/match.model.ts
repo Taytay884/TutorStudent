@@ -10,8 +10,8 @@ export const MatchSchema = new Schema({
   tutorId: { type: Schema.Types.ObjectId, ref: 'Tutor' },
   studentId: { type: Schema.Types.ObjectId, ref: 'Student' },
   dateMatched: { type: Date, default: Date.now },
-  requiredHours: { type: Number, required: true },
-  approvedHours: { type: Number, default: 0 },
+  hoursRequested: { type: Number, required: true },
+  hoursApproved: { type: Number, default: 0 },
   status: { type: String, default: MatchStatus.PENDING },
 });
 

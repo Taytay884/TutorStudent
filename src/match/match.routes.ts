@@ -3,7 +3,7 @@ import * as MatchLogic from './match.logic';
 import { IMatch } from './match.model';
 
 export function initMatchRoutes(app: Express) {
-  app.get('/Matches', async (req: Request, res: Response) => {
+  app.get('/matches', async (req: Request, res: Response) => {
     try {
       const Matches = await MatchLogic.getMatches();
       res.json(Matches);
@@ -12,7 +12,7 @@ export function initMatchRoutes(app: Express) {
     }
   });
 
-  app.post('/Match', async (req: Request, res: Response) => {
+  app.post('/match', async (req: Request, res: Response) => {
     try {
       const Match: IMatch = req.body;
       const newMatch = await MatchLogic.createMatch(Match);
@@ -22,7 +22,7 @@ export function initMatchRoutes(app: Express) {
     }
   });
 
-  app.delete('/Match/:id', async (req: Request, res: Response) => {
+  app.delete('/match/:id', async (req: Request, res: Response) => {
     try {
       const deletedMatch = await MatchLogic.deleteMatch(req.params.id);
       res.json(deletedMatch);
