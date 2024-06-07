@@ -1,7 +1,7 @@
-import { GetStudentsFilter, GetStudentsMongoQuery } from './student.type';
+import { GetProfilesFilter, GetProfilesMongoQuery } from './profile.type';
 
-export function transformGetStudentsFilterToMongoQuery(filter: GetStudentsFilter): Partial<GetStudentsMongoQuery> {
-  const mongoQuery: Partial<GetStudentsMongoQuery> = {};
+export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter): Partial<GetProfilesMongoQuery> {
+  const mongoQuery: Partial<GetProfilesMongoQuery> = {};
   const $or: any[] = [];
 
   if (filter.id) {

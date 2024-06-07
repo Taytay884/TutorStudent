@@ -5,7 +5,9 @@ export async function createMatch(match: IMatch): Promise<IMatch> {
 }
 
 export async function getMatches(): Promise<IMatch[]> {
-  return Match.find();
+  return Match.find()
+    .populate({ path: 'tutor', populate: { path: 'courses' } })
+    .populate({ path: 'student', populate: { path: 'courses' } });
 }
 
 export async function deleteMatch(id: string): Promise<IMatch | null> {

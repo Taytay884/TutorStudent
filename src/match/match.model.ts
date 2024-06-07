@@ -7,8 +7,8 @@ export interface IMatch extends Document {
 }
 
 export const MatchSchema = new Schema({
-  tutorId: { type: Schema.Types.ObjectId, ref: 'Tutor' },
-  studentId: { type: Schema.Types.ObjectId, ref: 'Student' },
+  tutor: { type: Schema.Types.ObjectId, ref: 'Profile' },
+  student: { type: Schema.Types.ObjectId, ref: 'Profile' },
   dateMatched: { type: Date, default: Date.now },
   hoursRequested: { type: Number, required: true },
   hoursApproved: { type: Number, default: 0 },
