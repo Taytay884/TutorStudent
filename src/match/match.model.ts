@@ -2,8 +2,12 @@ import { Schema, Document, model } from 'mongoose';
 import { MatchStatus } from './match.type';
 
 export interface IMatch extends Document {
-  name: string;
-  id: string;
+  tutor: string;
+  student: string;
+  dateMatched: Date;
+  hoursRequested: number;
+  hoursApproved: number;
+  status: MatchStatus;
 }
 
 export const MatchSchema = new Schema({

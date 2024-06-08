@@ -1,7 +1,8 @@
 export type GetProfilesFilter = {
   courses: string[],
   name: string,
-  id: string
+  id: string,
+  hoursToGive: number
 };
 
 

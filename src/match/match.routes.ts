@@ -22,6 +22,16 @@ export function initMatchRoutes(app: Express) {
     }
   });
 
+  app.put('/match', async (req: Request, res: Response) => {
+    try {
+      const match: IMatch = req.body;
+      const newMatch = await MatchLogic.updateMatch(match);
+      res.json(newMatch);
+    } catch (error: any) {
+      res.status(500).send(error.message);
+    }
+  });
+
   app.delete('/match/:id', async (req: Request, res: Response) => {
     try {
       const deletedMatch = await MatchLogic.deleteMatch(req.params.id);
