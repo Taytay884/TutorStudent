@@ -7,12 +7,12 @@ export async function createProfile(profile: IProfile): Promise<IProfile> {
 }
 
 export async function getProfileById(id: string): Promise<IProfile | null> {
-  return Profile.findById({ id }).populate('courses');
+  return Profile.findById({ id }).populate({ path: 'courses', foreignField: 'id' });
 }
 
 export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
   const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-  return Profile.find(mongoQuery).populate('courses');
+  return Profile.find(mongoQuery).populate({ path: 'courses', foreignField: 'id' });
 }
 
 export async function updateProfile(profile: IProfile): Promise<IProfile | null> {

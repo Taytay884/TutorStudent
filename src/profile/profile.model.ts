@@ -17,7 +17,8 @@ export const ProfileSchema = new Schema({
   phone: { type: String, required: true },
   hoursToGet: { type: Number },
   hoursToGive: { type: Number },
-  courses: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
+  courses: [{ type: String, ref: 'Course' }],
+  reason: { type: String },
 });
 
 export const Profile = model<IProfile>('Profile', ProfileSchema);

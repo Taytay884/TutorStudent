@@ -10,8 +10,11 @@ export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter
   if (filter.name) {
     $or.push({ name: { $regex: filter.name, $options: 'i' } });
   }
-  if (filter.hoursToGive) {
-    $or.push({ hoursToGive: { '$gte': filter.hoursToGive } });
+  if (!isNaN(filter.hoursToGive)) {
+    mongoQuery.hoursToGive = { '$gte': Number(filter.hoursToGive) } ;
+  }
+  if (!isNaN(filter.hoursToGet)) {
+    mongoQuery.hoursToGet = { '$gte': Number(filter.hoursToGet) } ;
   }
   if ($or.length > 0) {
     mongoQuery.$or = $or;

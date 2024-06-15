@@ -30,8 +30,8 @@ export async function updateMatch(match: IMatch): Promise<IMatch | null> {
 
 export async function getMatches(): Promise<IMatch[]> {
   return Match.find()
-    .populate({ path: 'tutor', populate: { path: 'courses' } })
-    .populate({ path: 'student', populate: { path: 'courses' } });
+    .populate({ path: 'tutor', populate: { path: 'courses', foreignField: 'id' } })
+    .populate({ path: 'student', populate: { path: 'courses', foreignField: 'id' } });
 }
 
 export async function deleteMatch(id: string): Promise<IMatch | null> {
