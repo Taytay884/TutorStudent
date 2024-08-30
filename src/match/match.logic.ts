@@ -22,6 +22,10 @@ export async function getMatches(): Promise<IMatch[]> {
   return MatchDal.getMatches();
 }
 
+export async function getMatch(matchId: string): Promise<IMatch | null> {
+  return MatchDal.getMatch(matchId);
+}
+
 export async function deleteMatch(id: string): Promise<IMatch | null> {
   return MatchDal.deleteMatch(id);
 }

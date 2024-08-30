@@ -34,6 +34,12 @@ export async function getMatches(): Promise<IMatch[]> {
     .populate({ path: 'student', populate: { path: 'courses', foreignField: 'id' } });
 }
 
+export async function getMatch(matchId: string): Promise<IMatch | null> {
+  return Match.findOne({ _id: matchId })
+    .populate({ path: 'tutor', populate: { path: 'courses', foreignField: 'id' } })
+    .populate({ path: 'student', populate: { path: 'courses', foreignField: 'id' } });
+}
+
 export async function deleteMatch(id: string): Promise<IMatch | null> {
   return Match.findByIdAndDelete(id);
 }

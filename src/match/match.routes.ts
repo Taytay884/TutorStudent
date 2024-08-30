@@ -12,6 +12,15 @@ export function initMatchRoutes(app: Express) {
     }
   });
 
+  app.get('/match/:id', async (req: Request, res: Response) => {
+    try {
+      const Matches = await MatchLogic.getMatch(req.params.id);
+      res.json(Matches);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
+
   app.post('/match', async (req: Request, res: Response) => {
     try {
       const Match: IMatch = req.body;
