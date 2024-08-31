@@ -27,6 +27,7 @@ export const ProfileSchema = new Schema({
   hoursToGive: { type: Number },
   courses: [{ type: String, ref: 'Course' }],
   reason: { type: String },
+  deactivation: { reason: { type: String }, from: { type: Date }, to: { type: Date } },
 });
 
 export const Profile = model<IProfile>('Profile', ProfileSchema);
