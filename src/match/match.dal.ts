@@ -1,7 +1,6 @@
 import { IMatch, Match } from './match.model';
 import { Profile } from '../profile/profile.model';
-import { MatchStatus } from './match.type';
-import { populate } from 'dotenv';
+import { GetMatchesFilter, MatchStatus } from './match.type';
 
 export async function createMatch(match: IMatch): Promise<IMatch> {
   await Profile.findByIdAndUpdate({ _id: match.tutor }, { '$inc': { hoursToGive: -1 * match.hoursApproved } });
@@ -29,8 +28,8 @@ export async function updateMatch(match: IMatch): Promise<IMatch | null> {
   return Match.findByIdAndUpdate(match._id, match, { new: true });
 }
 
-export async function getMatches(): Promise<IMatch[]> {
-  return Match.find()
+export async function getMatches(filter: GetMatchesFilter): Promise<IMatch[]> {
+  return Match.find(filter)
     .populate({ path: 'tutor', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'students', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'courses', foreignField: 'id' });

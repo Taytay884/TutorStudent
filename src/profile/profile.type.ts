@@ -7,8 +7,6 @@ export type GetProfilesFilter = {
   onlyTutors: boolean
 };
 
-
-
 export type GetProfilesMongoQuery = {
   $or: any[],
   courses: { $in: string[] },

@@ -1,6 +1,7 @@
 import * as MatchDal from './match.dal';
 import { IMatch } from './match.model';
 import { getMongoError } from '../utils/error';
+import { GetMatchesFilter } from './match.type';
 
 export async function createMatch(match: IMatch): Promise<IMatch> {
   try {
@@ -18,8 +19,8 @@ export async function updateMatch(match: IMatch): Promise<IMatch | null> {
   }
 }
 
-export async function getMatches(): Promise<IMatch[]> {
-  return MatchDal.getMatches();
+export async function getMatches(filter: GetMatchesFilter): Promise<IMatch[]> {
+  return MatchDal.getMatches(filter);
 }
 
 export async function getMatch(matchId: string): Promise<IMatch | null> {

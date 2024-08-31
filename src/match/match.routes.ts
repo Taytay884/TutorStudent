@@ -1,11 +1,12 @@
 import { Express, Request, Response } from 'express';
 import * as MatchLogic from './match.logic';
 import { IMatch } from './match.model';
+import { GetMatchesFilter } from './match.type';
 
 export function initMatchRoutes(app: Express) {
-  app.get('/matches', async (req: Request, res: Response) => {
+  app.get('/matches', async (req: Request<unknown, unknown, unknown, GetMatchesFilter>, res: Response) => {
     try {
-      const Matches = await MatchLogic.getMatches();
+      const Matches = await MatchLogic.getMatches(req.query);
       res.json(Matches);
     } catch (error) {
       res.status(500).send(error);

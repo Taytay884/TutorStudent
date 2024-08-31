@@ -6,3 +6,5 @@ export enum MatchStatus {
   REJECTED = 'REJECTED',
   CANCELED = 'CANCELED',
 }
+
+export type GetMatchesFilter = { status: MatchStatus };
