@@ -1,6 +1,8 @@
-import { IProfile, Profile } from './profile.model';
+import { IProfile, Profile, TutorProfile } from './profile.model';
 import { GetProfilesFilter } from './profile.type';
 import { transformGetProfilesFilterToMongoQuery } from './profile.utils';
+import { MatchStatus } from '../match/match.type';
+import { IMatch, Match } from '../match/match.model';
 
 export async function createProfile(profile: IProfile): Promise<IProfile> {
   return new Profile(profile).save();
@@ -19,7 +21,7 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
               $expr: {
                 $or: [
                   { $eq: ['$tutor', '$$profileId'] },
-                  { $eq: ['$student', '$$profileId'] },
+                  { $in: ['$$profileId', '$students'] },
                 ],
               },
             },
@@ -35,25 +37,51 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
           {
             $lookup: {
               from: 'profiles', // The collection name for profiles
-              localField: 'student',
+              localField: 'students',
               foreignField: '_id',
-              as: 'studentProfile',
+              as: 'studentProfiles',
+            },
+          },
+          {
+            $lookup: {
+              from: 'courses', // The collection name for courses
+              localField: 'courses',
+              foreignField: 'id',
+              as: 'matchCourses',
             },
           },
           {
             $addFields: {
               tutorProfile: { $arrayElemAt: ['$tutorProfile', 0] },
-              studentProfile: { $arrayElemAt: ['$studentProfile', 0] },
+              studentProfiles: { $map: {
+                input: '$studentProfiles',
+                as: 'profile',
+                in: {
+                  _id: '$$profile._id',
+                  id: '$$profile.id',
+                  name: '$$profile.name',
+                },
+              } },
+              matchCourses: { $map: {
+                input: '$matchCourses',
+                as: 'course',
+                in: {
+                  _id: '$$course._id',
+                  id: '$$course.id',
+                  name: '$$course.name',
+                },
+              } },
             },
           },
           {
             $project: {
               tutor: '$tutorProfile',
-              student: '$studentProfile',
+              students: '$studentProfiles',
               hoursRequested: 1,
               hoursApproved: 1,
               dateMatched: 1,
               status: 1,
+              courses: '$matchCourses', // Add courses to the output
             },
           },
         ],
@@ -75,9 +103,40 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
 
 export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
   const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-  return Profile.find(mongoQuery).populate({ path: 'courses', foreignField: 'id' });
+  return Profile.find(mongoQuery)
+    .populate({ path: 'courses', foreignField: 'id' })
+    .sort({ hoursToGive: -1, hoursToGet: -1 });
 }
 
+export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile[]> {
+  // Step 1: Get the tutor profiles based on the filter
+  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
+
+  const profiles = await Profile.find(mongoQuery)
+    .populate({ path: 'courses', foreignField: 'id' })
+    .sort({ hoursToGive: -1, hoursToGet: -1 });
+  // Step 2: Get the active matches for each tutor
+  const tutorIds = profiles.map(profile => profile._id);
+
+  const matches: IMatch[] = await Match.find({
+    tutor: { $in: tutorIds },
+    status: MatchStatus.IN_PROGRESS, // Adjust based on your match status field
+  });
+
+  // Create a map of active match counts per tutor
+  const matchCounts = matches.reduce((acc, match) => {
+    acc[match.tutor.toString()] = (acc[match.tutor.toString()] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Step 3: Combine tutor profiles with active match counts
+  return profiles.map(profile => ({
+    name: profile.name,
+    hoursToGive: profile.hoursToGive,
+    courses: profile.courses,
+    activeMatches: matchCounts[profile._id.toString()] || 0,
+  })).sort((a, b) => a.activeMatches - b.activeMatches);
+}
 export async function updateProfile(profile: IProfile): Promise<IProfile | null> {
   return Profile.findByIdAndUpdate(profile._id, profile, { new: true });
 }

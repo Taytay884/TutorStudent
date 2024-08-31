@@ -1,5 +1,12 @@
 import { Schema, Document, model } from 'mongoose';
 
+export type TutorProfile = {
+  name: string;
+  hoursToGive: number;
+  courses: string[];
+  activeMatches: number;
+};
+
 export interface IProfile extends Document {
   name: string;
   id: string;
@@ -8,6 +15,7 @@ export interface IProfile extends Document {
   hoursToGet: number;
   hoursToGive: number;
   courses: string[];
+  activeMatches?: number;
 }
 
 export const ProfileSchema = new Schema({

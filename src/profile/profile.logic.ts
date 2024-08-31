@@ -1,5 +1,5 @@
 import * as ProfileDal from './profile.dal';
-import { IProfile } from './profile.model';
+import { IProfile, TutorProfile } from './profile.model';
 import { getMongoError } from '../utils/error';
 import { GetProfilesFilter } from './profile.type';
 
@@ -15,7 +15,10 @@ export function getProfileById(id: string): Promise<IProfile | null> {
   return ProfileDal.getProfileById(id);
 }
 
-export function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
+export function getProfiles(filter: GetProfilesFilter): Promise<IProfile[] | TutorProfile[]> {
+  if (filter.onlyTutors) {
+    return ProfileDal.getTutors(filter);
+  }
   return ProfileDal.getProfiles(filter);
 }
 

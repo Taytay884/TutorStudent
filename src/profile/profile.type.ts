@@ -4,6 +4,7 @@ export type GetProfilesFilter = {
   id: string,
   hoursToGive: number
   hoursToGet: number
+  onlyTutors: boolean
 };
 
 

@@ -3,7 +3,7 @@ import { MatchStatus } from './match.type';
 
 export interface IMatch extends Document {
   tutor: string;
-  student: string;
+  students: string;
   dateMatched: Date;
   hoursRequested: number;
   hoursApproved: number;
@@ -12,11 +12,12 @@ export interface IMatch extends Document {
 
 export const MatchSchema = new Schema({
   tutor: { type: Schema.Types.ObjectId, ref: 'Profile' },
-  student: { type: Schema.Types.ObjectId, ref: 'Profile' },
+  students: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
   dateMatched: { type: Date, default: Date.now },
   hoursRequested: { type: Number, required: true },
   hoursApproved: { type: Number, default: 0 },
   status: { type: String, default: MatchStatus.PENDING },
+  courses: [{ type: String, ref: 'Course' }],
 });
 
 export const Match = model<IMatch>('Match', MatchSchema);
