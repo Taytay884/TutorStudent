@@ -10,6 +10,6 @@ export type GetProfilesFilter = {
 export type GetProfilesMongoQuery = {
   $or: any[],
   courses: { $in: string[] },
-  hoursToGet: { $gte: number },
-  hoursToGive: { $gte: number }
+  hoursToGet: { $gt: number },
+  hoursToGive: { $gt: number }
 };

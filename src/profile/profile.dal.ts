@@ -131,6 +131,7 @@ export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile
 
   // Step 3: Combine tutor profiles with active match counts
   return profiles.map(profile => ({
+    ...profile.toObject(),
     name: profile.name,
     hoursToGive: profile.hoursToGive,
     courses: profile.courses,
