@@ -101,25 +101,10 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
   return profileWithMatches.length > 0 ? profileWithMatches[0] : null;
 }
 
-export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
-  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-  return Profile.find(mongoQuery)
-    .populate({ path: 'courses', foreignField: 'id' })
-    .sort({ hoursToGive: -1, hoursToGet: -1 });
-}
-
-export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile[]> {
-  // Step 1: Get the tutor profiles based on the filter
-  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-
-  const profiles = await Profile.find(mongoQuery)
-    .populate({ path: 'courses', foreignField: 'id' })
-    .sort({ hoursToGive: -1, hoursToGet: -1 });
-  // Step 2: Get the active matches for each tutor
-  const tutorIds = profiles.map(profile => profile._id);
-
+async function extendProfilesWithActiveMatches(profiles: IProfile[]): Promise<IProfile[]> {
+  const profileIds = profiles.map(profile => profile._id);
   const matches: IMatch[] = await Match.find({
-    tutor: { $in: tutorIds },
+    tutor: { $in: profileIds },
     status: MatchStatus.IN_PROGRESS, // Adjust based on your match status field
   });
 
@@ -132,11 +117,28 @@ export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile
   // Step 3: Combine tutor profiles with active match counts
   return profiles.map(profile => ({
     ...profile.toObject(),
-    name: profile.name,
-    hoursToGive: profile.hoursToGive,
-    courses: profile.courses,
     activeMatches: matchCounts[profile._id.toString()] || 0,
-  })).sort((a, b) => a.activeMatches - b.activeMatches);
+  } as IProfile)).sort((a, b) => a.activeMatches! - b.activeMatches!);
+}
+
+export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
+  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
+  const profiles = await Profile.find(mongoQuery)
+    .populate({ path: 'courses', foreignField: 'id' })
+    .sort({ hoursToGive: -1, hoursToGet: -1 });
+
+  return extendProfilesWithActiveMatches(profiles);
+}
+
+export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile[]> {
+  // Step 1: Get the tutor profiles based on the filter
+  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
+
+  const profiles = await Profile.find(mongoQuery)
+    .populate({ path: 'courses', foreignField: 'id' })
+    .sort({ hoursToGive: -1, hoursToGet: -1 });
+  // Step 2: Get the active matches for each tutor
+  return await extendProfilesWithActiveMatches(profiles) as TutorProfile[];
 }
 export async function updateProfile(profile: IProfile): Promise<IProfile | null> {
   return Profile.findByIdAndUpdate(profile._id, profile, { new: true });
