@@ -7,7 +7,7 @@ export async function createMatch(match: IMatch): Promise<IMatch> {
 }
 
 export async function updateMatch(match: IMatch): Promise<IMatch | null> {
-  const updatedMatch = Match.findByIdAndUpdate(match._id, match, { new: true });
+  const updatedMatch = await Match.findByIdAndUpdate(match._id, match, { new: true });
   if (!updatedMatch) {
     throw new Error('Match not found');
   }
@@ -16,11 +16,31 @@ export async function updateMatch(match: IMatch): Promise<IMatch | null> {
     await Profile.updateMany({ _id: { $in: match.students } }, { '$inc': { hoursToGet: -1 * match.hoursApproved } });
   }
 
-  return Match.findByIdAndUpdate(match._id, match, { new: true });
+  return updatedMatch;
+}
+
+function transformGetMatchesFilter(filter: GetMatchesFilter) {
+  const newFilter: Record<string, any> = {};
+
+  if (filter.status) {
+    newFilter.status = filter.status;
+  }
+
+  if (filter.dateMatched) {
+    newFilter.dateMatched = { $gt: filter.dateMatched };
+  }
+
+  if (filter.dateFinished) {
+    newFilter.dateFinished = { $lt: filter.dateFinished };
+  } else {
+    newFilter.dateFinished = { $exists: false };
+  }
+
+  return newFilter;
 }
 
 export async function getMatches(filter: GetMatchesFilter): Promise<IMatch[]> {
-  return Match.find(filter)
+  return Match.find(transformGetMatchesFilter(filter))
     .populate({ path: 'tutor', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'students', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'courses', foreignField: 'id' });

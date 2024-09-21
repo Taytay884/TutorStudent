@@ -7,4 +7,4 @@ export enum MatchStatus {
   CANCELED = 'CANCELED',
 }
 
-export type GetMatchesFilter = { status: MatchStatus };
+export type GetMatchesFilter = { status: MatchStatus, dateMatched: Date, dateFinished: Date };
