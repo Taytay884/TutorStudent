@@ -40,7 +40,7 @@ function transformGetMatchesFilter(filter: GetMatchesFilter) {
 }
 
 export async function getMatches(filter: GetMatchesFilter): Promise<IMatch[]> {
-  return Match.find(transformGetMatchesFilter(filter))
+  return Match.find(transformGetMatchesFilter(filter)).sort({ dateMatched: -1 })
     .populate({ path: 'tutor', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'students', populate: { path: 'courses', foreignField: 'id' } })
     .populate({ path: 'courses', foreignField: 'id' });
