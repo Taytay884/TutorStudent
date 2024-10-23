@@ -6,7 +6,8 @@ enum Association {
 }
 
 export type TutorProfile = {
-  name: string;
+  firstName: string;
+  lastName: string;
   hoursToGive: number;
   courses: string[];
   activeMatches: number;
@@ -14,7 +15,8 @@ export type TutorProfile = {
 };
 
 export interface IProfile extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   id: string;
   email: string;
   phone: string;
@@ -23,10 +25,12 @@ export interface IProfile extends Document {
   courses: string[];
   activeMatches?: number;
   association?: Association;
+  name?: string; // virtual
 }
 
 export const ProfileSchema = new Schema({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   id: { type: String, required: true, unique: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },

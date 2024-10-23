@@ -1,10 +1,10 @@
 export type GetProfilesFilter = {
-  courses: string[],
-  name: string,
-  id: string,
-  hoursToGive: number
-  hoursToGet: number
-  onlyTutors: boolean
+  courses: string[];
+  name: string;
+  id: string;
+  hoursToGive: number;
+  hoursToGet: number;
+  onlyTutors: boolean;
 };
 
 export type GetProfilesMongoQuery = {

@@ -8,7 +8,15 @@ export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter
     $or.push({ id: { $regex: filter.id, $options: 'i' } });
   }
   if (filter.name) {
-    $or.push({ name: { $regex: filter.name, $options: 'i' } });
+    $or.push({
+      $expr: {
+        $regexMatch: {
+          input: { $concat: ['$firstName', ' ', '$lastName'] },
+          regex: filter.name,
+          options: 'i',
+        },
+      },
+    });
   }
   if (!isNaN(filter.hoursToGive)) {
     mongoQuery.hoursToGive = { '$gt': Number(filter.hoursToGive) } ;

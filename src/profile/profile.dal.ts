@@ -59,7 +59,7 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
                 in: {
                   _id: '$$profile._id',
                   id: '$$profile.id',
-                  name: '$$profile.name',
+                  name: { $concat: ['$$profile.firstName', ' ', '$$profile.lastName'] },
                 },
               } },
               matchCourses: { $map: {
