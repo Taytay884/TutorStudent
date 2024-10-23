@@ -32,8 +32,6 @@ function transformGetMatchesFilter(filter: GetMatchesFilter) {
 
   if (filter.dateFinished) {
     newFilter.dateFinished = { $lt: filter.dateFinished };
-  } else {
-    newFilter.dateFinished = { $exists: false };
   }
 
   return newFilter;
