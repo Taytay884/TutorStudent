@@ -23,6 +23,7 @@ export interface IProfile extends Document {
   hoursToGet: number;
   hoursToGive: number;
   courses: string[];
+  reasons: string[];
   activeMatches?: number;
   association?: Association;
   name?: string; // virtual
@@ -37,7 +38,7 @@ export const ProfileSchema = new Schema({
   hoursToGet: { type: Number },
   hoursToGive: { type: Number },
   courses: [{ type: String, ref: 'Course' }],
-  reason: { type: String },
+  reasons: [{ type: String }],
   deactivation: { reason: { type: String }, from: { type: Date }, to: { type: Date } },
   association: { type: String, enum: Object.values(Association) },
 });
