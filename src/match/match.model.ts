@@ -19,6 +19,7 @@ export const MatchSchema = new Schema({
   hoursRequested: { type: Number, required: true },
   hoursApproved: { type: Number, default: 0 },
   status: { type: String, default: MatchStatus.PENDING },
+  finishReason: { type: String },
   courses: [{ type: String, ref: 'Course' }],
 });
 
