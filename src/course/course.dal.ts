@@ -5,7 +5,7 @@ export async function createCourse(course: ICourse): Promise<ICourse> {
 }
 
 export async function getCourses(): Promise<ICourse[]> {
-  return Course.find();
+  return Course.find().sort({ name: 1 });
 }
 
 export async function deleteCourse(id: string): Promise<ICourse | null> {

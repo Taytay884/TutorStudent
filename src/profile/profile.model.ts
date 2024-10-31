@@ -3,6 +3,8 @@ import { Schema, Document, model } from 'mongoose';
 enum Association {
   SMART_UP = 'SMART_UP',
   INDIVIDUAL = 'INDIVIDUAL',
+  KOL_KORE = 'KOL_KORE',
+  AFTER_DEGREE = 'AFTER_DEGREE',
 }
 
 export type TutorProfile = {
