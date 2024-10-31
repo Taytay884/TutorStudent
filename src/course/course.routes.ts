@@ -1,6 +1,7 @@
 import { Express, Request, Response } from 'express';
 import * as CourseLogic from './course.logic';
 import { ICourse } from './course.model';
+import { responseError } from '../utils/error';
 
 export function initCourseRoutes(app: Express) {
   app.get('/courses', async (req: Request, res: Response) => {
@@ -8,7 +9,7 @@ export function initCourseRoutes(app: Express) {
       const courses = await CourseLogic.getCourses();
       res.json(courses);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -18,7 +19,7 @@ export function initCourseRoutes(app: Express) {
       const newCourse = await CourseLogic.createCourse(course);
       res.json(newCourse);
     } catch (error: any) {
-      res.status(500).send(error.message);
+      responseError(res, error);
     }
   });
 
@@ -27,7 +28,7 @@ export function initCourseRoutes(app: Express) {
       const deletedCourse = await CourseLogic.deleteCourse(req.params.id);
       res.json(deletedCourse);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 }

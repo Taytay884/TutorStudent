@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express';
 import * as MatchLogic from './match.logic';
 import { IMatch } from './match.model';
 import { GetMatchesFilter } from './match.type';
+import { responseError } from '../utils/error';
 
 export function initMatchRoutes(app: Express) {
   app.get('/matches', async (req: Request<unknown, unknown, unknown, GetMatchesFilter>, res: Response) => {
@@ -9,7 +10,7 @@ export function initMatchRoutes(app: Express) {
       const Matches = await MatchLogic.getMatches(req.query);
       res.json(Matches);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -18,7 +19,7 @@ export function initMatchRoutes(app: Express) {
       const Matches = await MatchLogic.getMatch(req.params.id);
       res.json(Matches);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -28,7 +29,7 @@ export function initMatchRoutes(app: Express) {
       const newMatch = await MatchLogic.createMatch(Match);
       res.json(newMatch);
     } catch (error: any) {
-      res.status(500).send(error.message);
+      responseError(res, error);
     }
   });
 
@@ -38,7 +39,7 @@ export function initMatchRoutes(app: Express) {
       const newMatch = await MatchLogic.updateMatch(match);
       res.json(newMatch);
     } catch (error: any) {
-      res.status(500).send(error.message);
+      responseError(res, error);
     }
   });
 
@@ -47,7 +48,7 @@ export function initMatchRoutes(app: Express) {
       const deletedMatch = await MatchLogic.deleteMatch(req.params.id);
       res.json(deletedMatch);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 }

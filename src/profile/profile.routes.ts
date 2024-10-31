@@ -2,6 +2,7 @@ import { Express, Request, Response } from 'express';
 import * as ProfileLogic from './profile.logic';
 import { IProfile } from './profile.model';
 import { GetProfilesFilter } from './profile.type';
+import { responseError } from '../utils/error';
 
 export function initProfileRoutes(app: Express) {
   app.get('/profiles', async (req: Request<unknown, unknown, unknown, GetProfilesFilter>, res: Response) => {
@@ -9,7 +10,7 @@ export function initProfileRoutes(app: Express) {
       const profiles = await ProfileLogic.getProfiles(req.query);
       res.json(profiles);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -18,7 +19,7 @@ export function initProfileRoutes(app: Express) {
       const profile = await ProfileLogic.getProfileById(req.params.id);
       res.json(profile);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -28,7 +29,7 @@ export function initProfileRoutes(app: Express) {
       const newProfile = await ProfileLogic.createProfile(profile);
       res.json(newProfile);
     } catch (error: any) {
-      res.status(500).send(error.message);
+      responseError(res, error);
     }
   });
 
@@ -38,7 +39,7 @@ export function initProfileRoutes(app: Express) {
       const updatedProfile = await ProfileLogic.updateProfile(profile);
       res.json(updatedProfile);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 
@@ -47,7 +48,7 @@ export function initProfileRoutes(app: Express) {
       const deletedProfile = await ProfileLogic.deleteProfile(req.params.id);
       res.json(deletedProfile);
     } catch (error) {
-      res.status(500).send(error);
+      responseError(res, error);
     }
   });
 }
