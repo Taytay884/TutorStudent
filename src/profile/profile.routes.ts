@@ -1,8 +1,9 @@
 import { Express, Request, Response } from 'express';
 import * as ProfileLogic from './profile.logic';
-import { IProfile } from './profile.model';
+import { IProfile, IProfileDocument } from './profile.model';
 import { GetProfilesFilter } from './profile.type';
 import { responseError } from '../utils/error';
+import upload from '../multer';
 
 export function initProfileRoutes(app: Express) {
   app.get('/profiles', async (req: Request<unknown, unknown, unknown, GetProfilesFilter>, res: Response) => {
@@ -33,9 +34,24 @@ export function initProfileRoutes(app: Express) {
     }
   });
 
+
+  app.post('/profiles/bulk', upload.single('file'), async (req: Request, res: Response) => {
+    try {
+      // Check if a file is uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      const createdProfiles = await ProfileLogic.bulkCreateProfiles(req.file.buffer);
+      res.json(createdProfiles);
+    } catch (error: any) {
+      responseError(res, error);
+    }
+  });
+
   app.put('/profile', async (req: Request, res: Response) => {
     try {
-      const profile: IProfile = req.body;
+      const profile: IProfileDocument = req.body;
       const updatedProfile = await ProfileLogic.updateProfile(profile);
       res.json(updatedProfile);
     } catch (error) {

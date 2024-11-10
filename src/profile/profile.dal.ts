@@ -1,4 +1,4 @@
-import { IProfile, Profile, TutorProfile } from './profile.model';
+import { IProfile, IProfileDocument, Profile, TutorProfile } from './profile.model';
 import { GetProfilesFilter } from './profile.type';
 import { transformGetProfilesFilterToMongoQuery } from './profile.utils';
 import { MatchStatus } from '../match/match.type';
@@ -101,7 +101,7 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
   return profileWithMatches.length > 0 ? profileWithMatches[0] : null;
 }
 
-async function extendProfilesWithActiveMatches(profiles: IProfile[]): Promise<IProfile[]> {
+async function extendProfilesWithActiveMatches(profiles: IProfileDocument[]): Promise<IProfile[]> {
   const profileIds = profiles.map(profile => profile._id);
   const matches: IMatch[] = await Match.find({
     tutor: { $in: profileIds },
@@ -118,7 +118,7 @@ async function extendProfilesWithActiveMatches(profiles: IProfile[]): Promise<IP
   return profiles.map(profile => ({
     ...profile.toObject(),
     activeMatches: matchCounts[profile._id.toString()] || 0,
-  } as IProfile)).sort((a, b) => a.activeMatches! - b.activeMatches!);
+  } as IProfileDocument)).sort((a, b) => a.activeMatches! - b.activeMatches!);
 }
 
 export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
@@ -140,7 +140,7 @@ export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile
   // Step 2: Get the active matches for each tutor
   return await extendProfilesWithActiveMatches(profiles) as TutorProfile[];
 }
-export async function updateProfile(profile: IProfile): Promise<IProfile | null> {
+export async function updateProfile(profile: IProfileDocument): Promise<IProfile | null> {
   return Profile.findByIdAndUpdate(profile._id, profile, { new: true });
 }
 

@@ -1,6 +1,6 @@
 import { Schema, Document, model } from 'mongoose';
 
-enum Association {
+export enum Association {
   SMART_UP = 'SMART_UP',
   INDIVIDUAL = 'INDIVIDUAL',
   KOL_KORE = 'KOL_KORE',
@@ -16,7 +16,7 @@ export type TutorProfile = {
   association: Association;
 };
 
-export interface IProfile extends Document {
+export interface IProfile {
   firstName: string;
   lastName: string;
   id: string;
@@ -28,7 +28,6 @@ export interface IProfile extends Document {
   reasons: string[];
   activeMatches?: number;
   association?: Association;
-  name?: string; // virtual
 }
 
 export const ProfileSchema = new Schema({
@@ -45,4 +44,5 @@ export const ProfileSchema = new Schema({
   association: { type: String, enum: Object.values(Association) },
 });
 
-export const Profile = model<IProfile>('Profile', ProfileSchema);
+export type IProfileDocument = IProfile & Document;
+export const Profile = model<IProfileDocument>('Profile', ProfileSchema);

@@ -1,4 +1,5 @@
-import { GetProfilesFilter, GetProfilesMongoQuery } from './profile.type';
+import { BulkUploadProfilesRow, GetProfilesFilter, GetProfilesMongoQuery } from './profile.type';
+import { Association, IProfile } from './profile.model';
 
 export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter): Partial<GetProfilesMongoQuery> {
   const mongoQuery: Partial<GetProfilesMongoQuery> = {};
@@ -32,4 +33,29 @@ export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter
   }
 
   return mongoQuery;
+}
+
+export function sheetRowToProfile(row: BulkUploadProfilesRow): IProfile {
+  const requiredFields: (keyof BulkUploadProfilesRow)[] = ['תעודת זהות', 'שם פרטי', 'שם משפחה', 'אימייל', 'טלפון', 'קורסים'];
+
+  const emptyRequiredFields = requiredFields.filter(field => {
+    return !row[field];
+  });
+  if (emptyRequiredFields.length !== 0) {
+    throw new Error(`Missing required fields: ${emptyRequiredFields.join(', ')}`);
+  }
+
+  return {
+    id: row['תעודת זהות'],
+    firstName: row['שם פרטי'],
+    lastName: row['שם משפחה'],
+    email: row['אימייל'],
+    phone: row['טלפון'],
+    courses: row['קורסים'].split(','),
+    hoursToGive: row['שעות בתור חונך'] || 0,
+    hoursToGet: row['שעות בתור חניך'] || 0,
+    reasons: row['סיבה'] ? [row['סיבה']] : [],
+    association: row['מאגר'] as Association,
+  };
+
 }
