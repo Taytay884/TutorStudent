@@ -41,8 +41,9 @@ export async function bulkCreateProfiles(fileAsBuffer: Buffer): Promise<any> {
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const data: any[] = xlsx.utils.sheet_to_json(worksheet);
+  const filteredData = data.filter((row: any) => Object.values(row).some(Boolean));
   const createdProfiles: IProfile[] = [];
-  for (const [index, row] of data.entries()) {
+  for (const [index, row] of filteredData.entries()) {
     try {
       const profile = sheetRowToProfile(row);
       const createdProfile = await ProfileDal.createProfile(profile);
