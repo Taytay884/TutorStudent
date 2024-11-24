@@ -50,7 +50,7 @@ export async function bulkCreateProfiles(fileAsBuffer: Buffer): Promise<any> {
       createdProfiles.push(createdProfile);
     } catch (error: any) {
       console.log(`Error in row ${index + 1}: ${error.message}`);
-      throw new Error(getMongoError(error));
+      // throw new Error(getMongoError(error));
     }
   }
   return createdProfiles;

@@ -36,7 +36,7 @@ export function transformGetProfilesFilterToMongoQuery(filter: GetProfilesFilter
 }
 
 export function sheetRowToProfile(row: BulkUploadProfilesRow): IProfile {
-  const requiredFields: (keyof BulkUploadProfilesRow)[] = ['תעודת זהות', 'שם פרטי', 'שם משפחה', 'אימייל', 'טלפון', 'קורסים'];
+  const requiredFields: (keyof BulkUploadProfilesRow)[] = ['תעודת זהות', 'שם פרטי', 'שם משפחה', 'אימייל', 'טלפון'];
 
   const emptyRequiredFields = requiredFields.filter(field => {
     return !row[field];
