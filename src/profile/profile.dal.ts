@@ -53,15 +53,6 @@ export async function getProfileById(id: string): Promise<IProfile | null> {
           {
             $addFields: {
               tutorProfile: { $arrayElemAt: ['$tutorProfile', 0] },
-              studentProfiles: { $map: {
-                input: '$studentProfiles',
-                as: 'profile',
-                in: {
-                  _id: '$$profile._id',
-                  id: '$$profile.id',
-                  name: { $concat: ['$$profile.firstName', ' ', '$$profile.lastName'] },
-                },
-              } },
               matchCourses: { $map: {
                 input: '$matchCourses',
                 as: 'course',
