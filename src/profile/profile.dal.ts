@@ -175,6 +175,14 @@ export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]
               status: MatchStatus.IN_PROGRESS, // Adjust based on your match status field
             },
           },
+          {
+            $lookup: {
+              from: 'courses', // Collection for courses
+              localField: 'courses', // Match courses by their IDs in the matches
+              foreignField: 'id',
+              as: 'course', // Retrieve full course details
+            },
+          },
         ],
       },
     },
@@ -185,7 +193,7 @@ export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]
           $reduce: {
             input: '$activeMatches',
             initialValue: [],
-            in: { $concatArrays: ['$$value', '$$this.courses'] }, // Merge all courses into a single array
+            in: { $concatArrays: ['$$value', '$$this.course'] }, // Merge all course details into a single array
           },
         },
       },
@@ -193,22 +201,26 @@ export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]
   );
 
   if (filter.reduceMatchedCourses) {
-    pipeline.push(    {
-      $addFields: {
-        notMatchedCourses: {
-          $filter: {
-            input: '$courses',
-            as: 'course',
-            cond: { $not: { $in: ['$$course.id', { $ifNull: ['$activeMatchesCourses', []] }] } },
+    pipeline.push(
+      {
+        $addFields: {
+          notMatchedCourses: {
+            $filter: {
+              input: '$courses',
+              as: 'course',
+              cond: {
+                $not: { $in: ['$$course.id', { $map: { input: '$activeMatchesCourses', as: 'amc', in: '$$amc.id' } }] },
+              },
+            },
           },
         },
       },
-    },
-    {
-      $match: {
-        notMatchedCourses: { $gt: [] },
+      {
+        $match: {
+          notMatchedCourses: { $gt: [] },
+        },
       },
-    });
+    );
   }
 
   // Sorting
@@ -216,7 +228,7 @@ export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]
     $sort: {
       hoursToGive: -1,
       hoursToGet: -1,
-      activeMatches: -1,
+      activeMatchesCount: -1,
     },
   });
 
