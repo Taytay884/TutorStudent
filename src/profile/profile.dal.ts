@@ -113,24 +113,118 @@ async function extendProfilesWithActiveMatches(profiles: IProfileDocument[]): Pr
 }
 
 export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
-  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-  const profiles = await Profile.find(mongoQuery)
-    .populate({ path: 'courses', foreignField: 'id' })
-    .sort({ hoursToGive: -1, hoursToGet: -1 });
+  const pipeline: any[] = [];
 
-  return extendProfilesWithActiveMatches(profiles);
+  const $or: any[] = [];
+  if (filter.id) {
+    $or.push({ id: { $regex: filter.id, $options: 'i' } });
+  }
+  if (filter.name) {
+    $or.push({
+      $expr: {
+        $regexMatch: {
+          input: { $concat: ['$firstName', ' ', '$lastName'] },
+          regex: filter.name,
+          options: 'i',
+        },
+      },
+    });
+  }
+  if ($or.length > 0) {
+    pipeline.push({ $match: { $or } });
+  }
+
+  if (!isNaN(filter.hoursToGive)) {
+    pipeline.push({
+      $match: { hoursToGive: { $gt: Number(filter.hoursToGive) } },
+    });
+  }
+  if (!isNaN(filter.hoursToGet)) {
+    pipeline.push({
+      $match: { hoursToGet: { $gt: Number(filter.hoursToGet) } },
+    });
+  }
+
+  if (filter.courses) {
+    pipeline.push({
+      $match: { courses: { $in: filter.courses } },
+    });
+  }
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: 'courses', // Adjust the collection name if necessary
+        localField: 'courses',
+        foreignField: 'id',
+        as: 'courses',
+      },
+    },
+  );
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: 'matches', // Adjust the collection name if necessary
+        localField: '_id',
+        foreignField: 'students',
+        as: 'activeMatches',
+        pipeline: [
+          {
+            $match: {
+              status: MatchStatus.IN_PROGRESS, // Adjust based on your match status field
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        activeMatchesCount: { $size: '$activeMatches' }, // Count total active matches for the profile
+        activeMatchesCourses: {
+          $reduce: {
+            input: '$activeMatches',
+            initialValue: [],
+            in: { $concatArrays: ['$$value', '$$this.courses'] }, // Merge all courses into a single array
+          },
+        },
+      },
+    },
+  );
+
+  if (filter.reduceMatchedCourses) {
+    pipeline.push(    {
+      $addFields: {
+        notMatchedCourses: {
+          $filter: {
+            input: '$courses',
+            as: 'course',
+            cond: { $not: { $in: ['$$course.id', { $ifNull: ['$activeMatchesCourses', []] }] } },
+          },
+        },
+      },
+    },
+    {
+      $match: {
+        notMatchedCourses: { $gt: [] },
+      },
+    });
+  }
+
+  // Sorting
+  pipeline.push({
+    $sort: {
+      hoursToGive: -1,
+      hoursToGet: -1,
+      activeMatches: -1,
+    },
+  });
+
+  const profiles: IProfile[] = await Profile.aggregate(pipeline);
+
+  return profiles;
 }
 
-export async function getTutors(filter: GetProfilesFilter): Promise<TutorProfile[]> {
-  // Step 1: Get the tutor profiles based on the filter
-  const mongoQuery = transformGetProfilesFilterToMongoQuery(filter);
-
-  const profiles = await Profile.find(mongoQuery)
-    .populate({ path: 'courses', foreignField: 'id' })
-    .sort({ hoursToGive: -1, hoursToGet: -1 });
-  // Step 2: Get the active matches for each tutor
-  return await extendProfilesWithActiveMatches(profiles) as TutorProfile[];
-}
 export async function updateProfile(profile: IProfileDocument): Promise<IProfile | null> {
   return Profile.findByIdAndUpdate(profile._id, profile, { new: true });
 }

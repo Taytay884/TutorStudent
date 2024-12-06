@@ -7,6 +7,7 @@ export type GetProfilesFilter = {
   hoursToGive: number;
   hoursToGet: number;
   onlyTutors: boolean;
+  reduceMatchedCourses: boolean;
 };
 
 export type GetProfilesMongoQuery = {

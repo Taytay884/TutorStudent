@@ -18,9 +18,6 @@ export function getProfileById(id: string): Promise<IProfile | null> {
 }
 
 export function getProfiles(filter: GetProfilesFilter): Promise<IProfile[] | TutorProfile[]> {
-  if (filter.onlyTutors) {
-    return ProfileDal.getTutors(filter);
-  }
   return ProfileDal.getProfiles(filter);
 }
 
