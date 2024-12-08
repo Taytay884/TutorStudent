@@ -167,6 +167,29 @@ export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]
       $lookup: {
         from: 'matches', // Adjust the collection name if necessary
         localField: '_id',
+        foreignField: 'tutor',
+        as: 'activeTutorMatches',
+        pipeline: [
+          {
+            $match: {
+              status: MatchStatus.IN_PROGRESS, // Adjust based on your match status field
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        activeTutorMatchesCount: { $size: '$activeTutorMatches' }, // Count total active matches for the profile
+      },
+    },
+  );
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: 'matches', // Adjust the collection name if necessary
+        localField: '_id',
         foreignField: 'students',
         as: 'activeMatches',
         pipeline: [
