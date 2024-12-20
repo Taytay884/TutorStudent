@@ -10,6 +10,14 @@ export async function createCourse(course: ICourse): Promise<ICourse> {
   }
 }
 
+export async function updateCourse(course: ICourse): Promise<ICourse | null> {
+  try {
+    return await CourseDal.updateCourse(course);
+  } catch (error) {
+    throw new Error(getMongoError(error));
+  }
+}
+
 export async function getCourses(): Promise<ICourse[]> {
   return CourseDal.getCourses();
 }

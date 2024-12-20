@@ -23,6 +23,16 @@ export function initCourseRoutes(app: Express) {
     }
   });
 
+  app.put('/course', async (req: Request, res: Response) => {
+    try {
+      const course: ICourse = req.body;
+      const updatedCourse = await CourseLogic.updateCourse(course);
+      res.json(updatedCourse);
+    } catch (error) {
+      responseError(res, error);
+    }
+  });
+
   app.delete('/course/:id', async (req: Request, res: Response) => {
     try {
       const deletedCourse = await CourseLogic.deleteCourse(req.params.id);
