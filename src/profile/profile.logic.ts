@@ -21,6 +21,10 @@ export function getProfiles(filter: GetProfilesFilter): Promise<IProfile[] | Tut
   return ProfileDal.getProfiles(filter);
 }
 
+export function getProfilesForExport(): Promise<IProfile[] | TutorProfile[]> {
+  return ProfileDal.getProfilesForExport();
+}
+
 export function updateProfile(profile: IProfileDocument): Promise<IProfile | null> {
   try {
     return ProfileDal.updateProfile(profile);

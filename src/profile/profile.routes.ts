@@ -24,6 +24,15 @@ export function initProfileRoutes(app: Express) {
     }
   });
 
+  app.get('/profiles-for-export', async (req: Request, res: Response) => {
+    try {
+      const profiles = await ProfileLogic.getProfilesForExport();
+      res.json(profiles);
+    } catch (error) {
+      responseError(res, error);
+    }
+  });
+
   app.post('/profile', async (req: Request, res: Response) => {
     try {
       const profile: IProfile = req.body;

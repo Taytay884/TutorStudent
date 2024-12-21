@@ -112,6 +112,69 @@ async function extendProfilesWithActiveMatches(profiles: IProfileDocument[]): Pr
   } as IProfileDocument)).sort((a, b) => a.activeMatches! - b.activeMatches!);
 }
 
+
+export async function getProfilesForExport(): Promise<IProfile[]> {
+  const pipeline: any[] = [];
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: 'courses', // Adjust the collection name if necessary
+        localField: 'courses',
+        foreignField: 'id',
+        as: 'courses',
+      },
+    },
+  );
+
+  // pipeline.push(
+  //   {
+  //     $lookup: {
+  //       from: 'matches', // Adjust the collection name if necessary
+  //       localField: '_id',
+  //       foreignField: 'tutor',
+  //       as: 'tutorMatches',
+  //     },
+  //   },
+  // );
+
+  pipeline.push(
+    {
+      $lookup: {
+        from: 'matches', // Adjust the collection name if necessary
+        localField: '_id',
+        foreignField: 'students',
+        as: 'matches',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'courses', // Collection for courses
+              localField: 'courses', // Match courses by their IDs in the matches
+              foreignField: 'id',
+              as: 'courses', // Retrieve full course details
+            },
+          },
+          {
+            $lookup: {
+              from: 'profiles',
+              localField: 'tutor',
+              foreignField: '_id',
+              as: 'tutor',
+            },
+          },
+          {
+            $addFields: {
+              tutor: { $arrayElemAt: ['$tutor', 0] },
+            },
+          },
+        ],
+      },
+    },
+  );
+  return Profile.aggregate(pipeline);
+}
+
+
 export async function getProfiles(filter: GetProfilesFilter): Promise<IProfile[]> {
   const pipeline: any[] = [];
 
